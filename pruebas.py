@@ -8,6 +8,8 @@ from Crypto import Math
 from numpy.ma import zeros
 
 
+de
+
 def pot(a, b):
     if b == 0:
         return 1

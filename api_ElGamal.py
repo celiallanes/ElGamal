@@ -1,10 +1,10 @@
 import random
 from math import pow
-
 import Crypto
+from Crypto.Hash import SHA1
+from Crypto.Util.number import inverse
 
 import aux_ElGamal
-
 
 folder = 'exports/'
 
@@ -27,7 +27,7 @@ def gen_key(n, n_bits):
     print("\t\tbetha = " + str(b))
     print("\t\tClave pública = [" + pub_key + "]")
     print("\t\tClave privada = [" + priv_key + "]")
-
+    print()
     private_key = folder + 'private_' + n + '.key'
     public_key = folder + 'public_' + n + '.key'
     fpriv = open(private_key, 'w')
@@ -36,8 +36,8 @@ def gen_key(n, n_bits):
     fpub = open(public_key, 'w')
     fpub.write(str(pub_key))
     fpub.close()
-    print("\tFicheros \"private_" + n + ".key \" y \"public_" + n + ".key \" generados.")
-    print()
+    print("\tFicheros \""+ public_key + " \" y \"" + private_key + "\" generados.")
+    print("-----------------------------------------------------------------------------------------------\n")
 
 
 def cifrar(n, msg, pub_key_rx):
@@ -59,16 +59,18 @@ def cifrar(n, msg, pub_key_rx):
     f = open(msg_cifrado, "w")
     f.write(str(c1) + "," + str(c2))
     f.close()
+    print("\tFichero \"" + msg_cifrado + "\" generado.")
+    print("-----------------------------------------------------------------------------------------------\n")
+    print()
     return c
 
 
 def descifrar(n, c_fich, priv_key_m):
     priv_key = aux_ElGamal.param_fich(folder + priv_key_m)
     c = aux_ElGamal.param_fich(folder + c_fich)
-    print(
-        "------------------------------------------Descifrando------------------------------------------\n\tMensaje "
-        "cifrado: " + str(
-            c) + "\n\tClave privada: " + str(priv_key))
+    print("------------------------------------------Descifrando"
+          "------------------------------------------\n\tMensaje "
+          "cifrado: " + str(c) + "\n\tClave privada: " + str(priv_key))
     c1, c2 = c
     p, a, ld = priv_key
     c3 = (c1 ** ld) % p
@@ -80,13 +82,53 @@ def descifrar(n, c_fich, priv_key_m):
     f = open(msg_descifrado, "w")
     f.write(str(msg))
     f.close()
+    print("\tFichero \"" + msg_descifrado + "\" generado.")
+    print("-----------------------------------------------------------------------------------------------\n")
     return msg
 
 
-# def hash(msg):
+def hash_sha1(msg):
+    h = SHA1.new()
+    h.update()
+
+
+def firmar(n, msg, priv_key_m):
+    priv_key = aux_ElGamal.param_fich(folder + priv_key_m)
+    print("------------------------------------------Firmando"
+          "------------------------------------------\n\tMensaje "
+          ": " + str(msg) + "\n\tClave privada: " + str(priv_key))
+    p, a, ld = priv_key
+    h_msg = aux_ElGamal.param_fich(folder + msg)
+    euler_phi = aux_ElGamal.ind_euler(p)
+    H = aux_ElGamal.H_firma(euler_phi, p)
+    H_inv = inverse(H, euler_phi)
+    r = (a ** H) % p
+    s = ((h_msg - ld * r) * H_inv) % euler_phi
+    firma = [r, s]
+    #print("\tHash mensaje: " + str(c))
+    print("\tMensaje: " + str(msg))
+    print("\tFirma digital: " + str(firma))
+    print("\t-->r: " + str(r))
+    print("\t-->s: " + str(s))
+    print()
+    firma_digital = folder + 'signature_' + n
+    f = open(firma_digital, "w")
+    f.write(str(msg))
+    f.close()
+    print("\tFichero \"" + firma_digital + "\" generado.")
+    print("-----------------------------------------------------------------------------------------------\n")
+
+
+def verificar_firma(firma, msg, public_key_e):
+    public_key = aux_ElGamal.param_fich(folder + public_key_e)
+    print("------------------------------------------Verificando firma"
+          "------------------------------------------\n\tMensaje "
+          ": " + str(msg) + "\n\tClave publica: " + str(public_key))
+    p, a, b = public_key
 
 
 if __name__ == '__main__':
     gen_key('1', 1024)
-    cifrar('1',99, "public_1.key")
+    cifrar('1', 99, "public_1.key")
     descifrar('1', "msg_cifrado_1.pem", "private_1.key")
+    firmar(2, 'msg_descifrado_1.pem', 'private_1.key')

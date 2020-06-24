@@ -1,10 +1,8 @@
+import math
+import random
+
 import Crypto.Util.number
 import numpy as np
-
-
-
-
-# Obtiene un número primo de n bits: lo ideal es que sea de 1024 bits
 from numpy.ma import zeros
 
 
@@ -39,6 +37,22 @@ def raiz_primitiva(p):
     return raicesp, aleatorio
 
 
+def ind_euler(p):
+    eulerphi = 0;
+    for i in range(1, p):
+        if math.gcd(i, p) == 1:
+            eulerphi += 1
+    return eulerphi
+
+def H_firma(eulerphi, p):
+    valido = False
+    while valido == False:
+        valido = False
+        H = random.randint(1, p);
+        if math.gcd(H, eulerphi) == 1:
+            valido = True
+    return H
+
 def param_fich(fich):
     f = open(fich)
     fich_str = f.read()
@@ -52,15 +66,18 @@ def param_fich(fich):
 
 def potencia(a, b):
     if b == 0:
-        return  1
+        return 1
     elif b == 1:
-        return  a
+        return a
     elif a == 0:
-        return  0
+        return 0
     else:
         result = 1
-        z = zeros(b)
-        for x in range(b):
+        for i in range(b):
             result *= a
         return result
 
+
+if __name__ == '__main__':
+    x = ind_euler(6)
+    print(str(x))
