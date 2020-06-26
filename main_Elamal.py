@@ -35,7 +35,7 @@ while opcion.lower() != "f":
 
     if opcion.lower() == 'c':
         print("[C: Descifrar] Introduzca número/letra asociado a...")
-        n = input("\tLos ficheros que se generarán: ")
+        n = input("\tFicheros que se generarán: ")
         n_c = input("\tMensaje a descifrar: ")
         c = fich_name(n_c, opcion)
         n_priv_key = input("\tClave privada del que descifra: ")
@@ -45,7 +45,7 @@ while opcion.lower() != "f":
     if opcion.lower() == 'd':
         print("[D: Firmar] Introduzca número/letra asociado a...")
         n = input("\tFicheros generados: ")
-        n_msg = input("\tMensaje que desee firmar: ")
+        n_msg = input("\tMensaje a firmar: ")
         msg = fich_name(n_msg, opcion)
         n_priv_key = input("\tClave privada del emisor de la firma: ")
         priv_key = fich_name(n_priv_key, 'priv_key')
@@ -53,10 +53,9 @@ while opcion.lower() != "f":
 
     if opcion.lower() == 'e':
         print("[E: Verificar] Introduzca número/letra asociado a...")
-        n = input("\tFicheros generados: ")
         n_firma = input("\tFirma a verificar: ")
         firma = fich_name(n_firma, opcion)
-        n_msg = input("\tMensaje: ")
+        n_msg = input("\tMensaje asociado a la firma: ")
         msg = fich_name(n_msg, 'b')
         n_pub_key = input("\tClave pública del emisor de la firma: ")
         pub_key = fich_name(n_pub_key, 'pub_key')
